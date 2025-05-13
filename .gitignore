@@ -1,0 +1,36 @@
+[# Xcode
+build/
+DerivedData/
+*.xcuserstate
+*.xcscmblueprint
+
+# User-specific settings
+*.xcuserdata/
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/xcshareddata/WorkspaceSettings.xcsettings
+
+# SwiftPM
+.swiftpm/
+Package.resolved
+
+# CocoaPods (if used)
+Pods/
+
+# Carthage (if used)
+Carthage/
+
+# Fastlane (if used)
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# macOS specific
+.DS_Store
+
+# Other
+*.swp
+*.lock
+*.env
+]
