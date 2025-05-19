@@ -14,7 +14,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A3F31C612DCCBF1900AE52C3 /* MealTrackingApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = MealTrackingApp.app; path = "/Users/jacek/Documents/Semestr 6/Programowanie Aplikacji mobilnych IOS/MealTrackingApp/build/Debug-iphoneos/MealTrackingApp.app"; sourceTree = "<absolute>"; };
+		A312EFB12DDB7A6A003E776A /* MealTrackingApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MealTrackingApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3F31C952DCCC02C00AE52C3 /* Category+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Category+CoreDataClass.swift"; sourceTree = "<group>"; };
 		A3F31C962DCCC02C00AE52C3 /* Category+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Category+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A3F31C972DCCC02C00AE52C3 /* Meal+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Meal+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -48,6 +48,7 @@
 				A3F31C972DCCC02C00AE52C3 /* Meal+CoreDataClass.swift */,
 				A3F31C982DCCC02C00AE52C3 /* Meal+CoreDataProperties.swift */,
 				A3F31C632DCCBF1900AE52C3 /* MealTrackingApp */,
+				A312EFB12DDB7A6A003E776A /* MealTrackingApp.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -73,7 +74,7 @@
 			packageProductDependencies = (
 			);
 			productName = MealTrackingApp;
-			productReference = A3F31C612DCCBF1900AE52C3 /* MealTrackingApp.app */;
+			productReference = A312EFB12DDB7A6A003E776A /* MealTrackingApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

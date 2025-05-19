@@ -1,12 +1,12 @@
 import SwiftUI
 import CoreData
-import UIKit // For haptic feedback
+import UIKit
 
 struct MealListView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.colorScheme) private var colorScheme
     
-    @State private var showingAddView = false
+    @State private var isShowingAddMealView = false
     @State private var mealToEdit: Meal?
     @State private var searchText = ""
     @State private var selectedDate: Date = Date()
@@ -14,13 +14,11 @@ struct MealListView: View {
     @State private var filterMealType: String? = nil
     @State private var showFilterSheet = false
     @State private var showingStatistics = false
-    
-    // Normalize selected date to start of day
+
     private var normalizedSelectedDate: Date {
         Calendar.current.startOfDay(for: selectedDate)
     }
     
-    // Define FetchRequest for meals on the selected date
     @FetchRequest private var mealsForSelectedDay: FetchedResults<Meal>
     
     // For all meals (search results)
@@ -29,7 +27,6 @@ struct MealListView: View {
         animation: .default
     ) private var allMeals: FetchedResults<Meal>
     
-    // Initialize FetchRequest with dynamic predicate
     init() {
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: Date())
@@ -125,7 +122,7 @@ struct MealListView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showingAddView) {
+            .navigationDestination(isPresented: $isShowingAddMealView) {
                 AddMealView()
                     .environment(\.managedObjectContext, viewContext)
             }
@@ -393,7 +390,7 @@ struct MealListView: View {
                 .foregroundColor(.gray)
             
             Button(action: {
-                showingAddView = true
+                isShowingAddMealView = true
             }) {
                 Text("Add a meal")
                     .fontWeight(.medium)
@@ -409,7 +406,7 @@ struct MealListView: View {
     
     var addButton: some View {
         Button(action: {
-            showingAddView = true
+            isShowingAddMealView = true
         }) {
             Image(systemName: "plus")
                 .font(.title)

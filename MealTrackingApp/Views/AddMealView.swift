@@ -4,16 +4,14 @@ import PhotosUI
 
 struct AddMealView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
+    @State private var navigateToMealList = false // Stan do nawigacji
     
-    // Core meal data
     @State private var mealName = ""
     @State private var calories = 0.0
     @State private var date = Date()
     @State private var selectedCategory: Category?
     
-    // Extended meal data
     @State private var mealType = "Lunch"
     @State private var protein = 0.0
     @State private var carbs = 0.0
@@ -47,71 +45,78 @@ struct AddMealView: View {
     var mealToEdit: Meal?
     
     var body: some View {
-        ZStack {
-            backgroundGradient
-                .ignoresSafeArea()
-            
-            ScrollView {
-                VStack(spacing: 20) {
-                    headerView
-                    searchBar
-                    
-                    if isShowingFavorites {
-                        recentFoodsGrid
-                    } else {
-                        mealFormSections
+        NavigationStack { // Używamy NavigationStack dla nawigacji
+            ZStack {
+                backgroundGradient
+                    .ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(spacing: 20) {
+                        headerView
+                        searchBar
+                        
+                        if isShowingFavorites {
+                            recentFoodsGrid
+                        } else {
+                            mealFormSections
+                        }
+                        
+                        Spacer(minLength: 60)
+                    }
+                    .padding()
+                }
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text(mealToEdit == nil ? "Add Meal" : "Edit Meal")
+                            .font(.headline)
+                            .foregroundColor(.primary)
                     }
                     
-                    Spacer(minLength: 60)
-                }
-                .padding()
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text(mealToEdit == nil ? "Add Meal" : "Edit Meal")
-                        .font(.headline)
-                        .foregroundColor(.primary)
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(action: {
+                            isShowingFavorites.toggle()
+                        }) {
+                            Label(
+                                isShowingFavorites ? "Form View" : "Recent Meals",
+                                systemImage: isShowingFavorites ? "square.and.pencil" : "clock"
+                            )
+                        }
+                    }
                 }
                 
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        isShowingFavorites.toggle()
-                    }) {
-                        Label(
-                            isShowingFavorites ? "Form View" : "Recent Meals",
-                            systemImage: isShowingFavorites ? "square.and.pencil" : "clock"
-                        )
+                VStack {
+                    Spacer()
+                    saveButton
+                }
+            }
+            .alert(isPresented: $showAlert) {
+                Alert(
+                    title: Text("Invalid Input"),
+                    message: Text(alertMessage),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
+            .onAppear {
+                if let meal = mealToEdit {
+                    mealName = meal.name ?? ""
+                    calories = meal.calories
+                    date = meal.date ?? Date()
+                    selectedCategory = meal.toCategory
+                    mealType = meal.mealtype ?? "Lunch"
+                    protein = meal.protein
+                    carbs = meal.carbs
+                    fat = meal.fat
+                    notes = meal.notes ?? ""
+                    if let imageData = meal.imageData {
+                        selectedUIImage = UIImage(data: imageData)
                     }
                 }
             }
-            
-            VStack {
-                Spacer()
-                saveButton
-            }
-        }
-        .alert(isPresented: $showAlert) {
-            Alert(
-                title: Text("Invalid Input"),
-                message: Text(alertMessage),
-                dismissButton: .default(Text("OK"))
-            )
-        }
-        .onAppear {
-            if let meal = mealToEdit {
-                mealName = meal.name ?? ""
-                calories = meal.calories
-                date = meal.date ?? Date()
-                selectedCategory = meal.toCategory
-                mealType = meal.mealtype ?? "Lunch"
-                protein = meal.protein
-                carbs = meal.carbs
-                fat = meal.fat
-                notes = meal.notes ?? ""
-                if let imageData = meal.imageData {
-                    selectedUIImage = UIImage(data: imageData)
-                }
+            // Nawigacja do MealListView
+            .navigationDestination(isPresented: $navigateToMealList) {
+                MealListView()
+                    .environment(\.managedObjectContext, viewContext)
             }
         }
     }
@@ -194,6 +199,9 @@ struct AddMealView: View {
             formCard("Nutritional Info") {
                 nutritionalInfoSection
             }
+            
+            // Kategoria usunięta, ponieważ nie jest używana w formularzu
+            // Jeśli chcesz dodać wybór kategorii, musisz stworzyć odpowiedni interfejs
             
             formCard("Details") {
                 detailsSection
@@ -424,7 +432,8 @@ struct AddMealView: View {
                 return
             }
             saveOrUpdateMeal()
-            dismiss()
+            clearForm() // Czyścimy formularz
+            navigateToMealList = true // Aktywujemy nawigację
         }) {
             Text(mealToEdit == nil ? "Add Meal" : "Save Changes")
                 .fontWeight(.semibold)
@@ -541,7 +550,6 @@ struct AddMealView: View {
         
         meal.name = mealName
         meal.calories = calories
-        // Normalize date to start of day
         meal.date = Calendar.current.startOfDay(for: date)
         meal.toCategory = selectedCategory
         meal.mealtype = mealType
@@ -558,5 +566,22 @@ struct AddMealView: View {
             alertMessage = "Failed to save meal. Please try again."
             showAlert = true
         }
+    }
+    
+    // Funkcja do czyszczenia formularza
+    private func clearForm() {
+        mealName = ""
+        calories = 0.0
+        date = Date()
+        selectedCategory = nil
+        mealType = "Lunch"
+        protein = 0.0
+        carbs = 0.0
+        fat = 0.0
+        notes = ""
+        selectedPhoto = nil
+        selectedUIImage = nil
+        searchText = ""
+        isShowingFavorites = false
     }
 }
