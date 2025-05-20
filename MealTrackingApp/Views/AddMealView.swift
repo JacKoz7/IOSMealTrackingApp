@@ -5,7 +5,7 @@ import PhotosUI
 struct AddMealView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.colorScheme) var colorScheme
-    @State private var navigateToMealList = false // Stan do nawigacji
+    @State private var navigateToMealList = false
     
     @State private var mealName = ""
     @State private var calories = 0.0
@@ -45,7 +45,7 @@ struct AddMealView: View {
     var mealToEdit: Meal?
     
     var body: some View {
-        NavigationStack { // Używamy NavigationStack dla nawigacji
+        NavigationStack {
             ZStack {
                 backgroundGradient
                     .ignoresSafeArea()
@@ -113,7 +113,6 @@ struct AddMealView: View {
                     }
                 }
             }
-            // Nawigacja do MealListView
             .navigationDestination(isPresented: $navigateToMealList) {
                 MealListView()
                     .environment(\.managedObjectContext, viewContext)
@@ -137,28 +136,11 @@ struct AddMealView: View {
     var headerView: some View {
         VStack(spacing: 5) {
             if !isShowingFavorites {
-                HStack {
-                    ForEach(mealTypes, id: \.self) { type in
-                        Button(action: {
-                            mealType = type
-                        }) {
-                            VStack {
-                                Image(systemName: mealTypeIcon(type))
-                                    .font(.system(size: 18))
-                                Text(type)
-                                    .font(.caption)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(mealType == type ?
-                                        accentColor.opacity(0.2) :
-                                        Color.gray.opacity(0.1))
-                            .cornerRadius(12)
-                            .foregroundColor(mealType == type ? accentColor : .primary)
-                        }
-                    }
-                }
-                .padding(.bottom, 5)
+                
+                RadioButtonGroup(
+                    items: mealTypes,
+                    selectedItem: $mealType
+                )
             }
         }
     }
@@ -199,9 +181,6 @@ struct AddMealView: View {
             formCard("Nutritional Info") {
                 nutritionalInfoSection
             }
-            
-            // Kategoria usunięta, ponieważ nie jest używana w formularzu
-            // Jeśli chcesz dodać wybór kategorii, musisz stworzyć odpowiedni interfejs
             
             formCard("Details") {
                 detailsSection
@@ -340,6 +319,7 @@ struct AddMealView: View {
                 }
                 .padding(.top, 5)
             } else {
+                // kontrolka photos picker 
                 PhotosPicker(selection: $selectedPhoto, matching: .images) {
                     VStack {
                         Image(systemName: "photo")
@@ -432,8 +412,8 @@ struct AddMealView: View {
                 return
             }
             saveOrUpdateMeal()
-            clearForm() // Czyścimy formularz
-            navigateToMealList = true // Aktywujemy nawigację
+            clearForm()
+            navigateToMealList = true
         }) {
             Text(mealToEdit == nil ? "Add Meal" : "Save Changes")
                 .fontWeight(.semibold)
@@ -568,7 +548,6 @@ struct AddMealView: View {
         }
     }
     
-    // Funkcja do czyszczenia formularza
     private func clearForm() {
         mealName = ""
         calories = 0.0
@@ -583,5 +562,81 @@ struct AddMealView: View {
         selectedUIImage = nil
         searchText = ""
         isShowingFavorites = false
+    }
+}
+
+// MARK: - Radio Button Components
+
+// Pojedyncza kontrolka typu radio button
+struct RadioButton: View {
+    let id: String
+    let label: String
+    let icon: String
+    let isSelected: Bool
+    let action: () -> Void
+    let accentColor: Color
+    
+    var body: some View {
+        Button(action: action) {
+            VStack {
+                ZStack {
+                    Circle()
+                        .stroke(isSelected ? accentColor : Color.gray.opacity(0.5), lineWidth: 2)
+                        .frame(width: 22, height: 22)
+                    
+                    if isSelected {
+                        Circle()
+                            .fill(accentColor)
+                            .frame(width: 14, height: 14)
+                    }
+                }
+                
+                Image(systemName: icon)
+                    .font(.system(size: 16))
+                    .foregroundColor(isSelected ? accentColor : .gray)
+                
+                Text(label)
+                    .font(.caption)
+                    .foregroundColor(isSelected ? accentColor : .primary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .background(isSelected ? accentColor.opacity(0.1) : Color.clear)
+            .cornerRadius(10)
+        }
+    }
+}
+
+// Grupa kontrolek radio button
+struct RadioButtonGroup: View {
+    let items: [String]
+    @Binding var selectedItem: String
+    
+    var body: some View {
+        HStack {
+            ForEach(items, id: \.self) { item in
+                RadioButton(
+                    id: item,
+                    label: item,
+                    icon: mealTypeIcon(item),
+                    isSelected: selectedItem == item,
+                    action: {
+                        selectedItem = item
+                    },
+                    accentColor: .blue
+                )
+            }
+        }
+    }
+    
+    
+    func mealTypeIcon(_ type: String) -> String {
+        switch type {
+        case "Breakfast": return "sunrise"
+        case "Lunch": return "sun.max"
+        case "Dinner": return "moon.stars"
+        case "Snack": return "cup.and.saucer"
+        default: return "fork.knife"
+        }
     }
 }

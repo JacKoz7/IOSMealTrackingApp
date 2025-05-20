@@ -116,6 +116,7 @@ struct MealListView: View {
                     Spacer()
                     HStack {
                         Spacer()
+                        // dodawanie posiłku przycisk
                         addButton
                             .padding(.trailing, 20)
                             .padding(.bottom, 20)
@@ -277,6 +278,7 @@ struct MealListView: View {
         .padding()
         .background(Color.gray.opacity(0.1))
         .cornerRadius(15)
+        // gest double tap
         .onTapGesture(count: 2) {
             let generator = UIImpactFeedbackGenerator(style: .medium)
             generator.impactOccurred()

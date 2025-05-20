@@ -2,9 +2,10 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @State private var selectedTab = 0
     
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             NavigationStack {
                 MealListView()
                     .environment(\.managedObjectContext, viewContext)
@@ -12,6 +13,7 @@ struct ContentView: View {
             .tabItem {
                 Label("Meal list", systemImage: "list.bullet")
             }
+            .tag(0)
 
             NavigationStack {
                 AddMealView()
@@ -20,6 +22,7 @@ struct ContentView: View {
             .tabItem {
                 Label("Add meal", systemImage: "plus.circle")
             }
+            .tag(1)
 
             NavigationStack {
                 StatisticsView()
@@ -28,6 +31,11 @@ struct ContentView: View {
             .tabItem {
                 Label("Stats", systemImage: "chart.bar")
             }
+            .tag(2)
+        }
+        .accentColor(.gray)
+        .onAppear {
+            UITabBar.appearance().tintColor = UIColor.systemBlue
         }
     }
 }
